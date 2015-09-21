@@ -63,7 +63,7 @@ int WiFiClass::begin(char* ssid, uint8_t key_idx, const char *key)
 {
 	uint8_t status = WL_IDLE_STATUS;
 	uint8_t attempts = WL_MAX_ATTEMPT_CONNECTION;
-
+   if((ssid)&&(key)){
 	// set encryption key
    if (WiFiDrv::wifiSetKey(ssid, strlen(ssid), key_idx, key, strlen(key)) != WL_FAILURE)
    {
@@ -77,13 +77,15 @@ int WiFiClass::begin(char* ssid, uint8_t key_idx, const char *key)
 	   status = WL_CONNECT_FAILED;
    }
    return status;
+   }
+   return status;
 }
 
 int WiFiClass::begin(char* ssid, const char *passphrase)
 {
 	uint8_t status = WL_IDLE_STATUS;
 	uint8_t attempts = WL_MAX_ATTEMPT_CONNECTION;
-
+    if((ssid)&&(passphrase)){
     // set passphrase
     if (WiFiDrv::wifiSetPassphrase(ssid, strlen(ssid), passphrase, strlen(passphrase))!= WL_FAILURE)
     {
@@ -95,6 +97,8 @@ int WiFiClass::begin(char* ssid, const char *passphrase)
 	   while ((( status == WL_IDLE_STATUS)||(status == WL_SCAN_COMPLETED))&&(--attempts>0));
     }else{
     	status = WL_CONNECT_FAILED;
+    }
+    return status;
     }
     return status;
 }
