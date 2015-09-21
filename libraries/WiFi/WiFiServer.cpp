@@ -8,6 +8,8 @@ extern "C" {
 #include "WiFi.h"
 #include "WiFiClient.h"
 #include "WiFiServer.h"
+using namespace std;
+#include <stdio>
 
 WiFiServer::WiFiServer(uint16_t port)
 {
@@ -19,8 +21,17 @@ void WiFiServer::begin()
     uint8_t _sock = WiFiClass::getSocket();
     if (_sock != NO_SOCKET_AVAIL)
     {
+        try{
         ServerDrv::startServer(_port, _sock);
+        }catch(...){
+        	cerr << "Failed,Start the Server";
+        }
+        try{
         WiFiClass::_server_port[_sock] = _port;
+        }catch(...){
+        cerr << "Failed,Start the Server";	
+        }
+        
     }
 }
 
@@ -33,7 +44,7 @@ WiFiClient WiFiServer::available(byte* status)
     {
         if (WiFiClass::_server_port[sock] == _port)
         {
-        	WiFiClient client(sock);
+            WiFiClient client(sock);
             uint8_t _status = client.status();
             uint8_t _ser_status = this->status();
 
@@ -43,7 +54,11 @@ WiFiClient WiFiServer::available(byte* status)
             //server not in listen state, restart it
             if ((_ser_status == 0)&&(cycle_server_down++ > TH_SERVER_DOWN))
             {
+            	try{
             	ServerDrv::startServer(_port, sock);
+            	}catch(...){
+            	cerr << "Failed,Start the Server";	
+            	}
             	cycle_server_down = 0;
             }
 
@@ -75,7 +90,11 @@ size_t WiFiServer::write(const uint8_t *buffer, size_t size)
     {
         if (WiFiClass::_server_port[sock] != 0)
         {
+        	try{
         	WiFiClient client(sock);
+        	}catch(...){
+        		cerr << "Failed, to start the Client"
+        	}
 
             if (WiFiClass::_server_port[sock] == _port &&
                 client.status() == ESTABLISHED)
