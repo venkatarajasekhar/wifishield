@@ -24,7 +24,12 @@ int WiFiClient::connect(const char* host, uint16_t port) {
 	IPAddress remote_addr;
 	if (WiFi.hostByName(host, remote_addr))
 	{
-		return connect(remote_addr, port);
+		return try{
+			connect(remote_addr, port);
+			
+		}catch(...){
+			cerr << "Connect API Failed,Unable to connect the Host";
+		}
 	}
 	return 0;
 }
@@ -33,7 +38,11 @@ int WiFiClient::connect(IPAddress ip, uint16_t port) {
     _sock = getFirstSocket();
     if (_sock != NO_SOCKET_AVAIL)
     {
+    	try{
     	ServerDrv::startClient(uint32_t(ip), port, _sock);
+    	}catch(...){
+    		cerr << "Failed,erverDrv::startClient";
+    	}
     	WiFiClass::_state[_sock] = _sock;
 
     	unsigned long start = millis();
